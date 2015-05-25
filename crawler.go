@@ -1,20 +1,23 @@
 package main
 
 import (
-	"golang.org/x/net/html"
-
 	"fmt"
 	"net/http"
+
+	"github.com/krames/crawler/domain"
+
+	"golang.org/x/net/html"
 )
 
 func main() {
-	links := map[string]struct{}{}
+	page, _ := domain.NewPage("http://reddit.com/")
 
-	resp, err := http.Get("http://bbq.kylerames.com/")
+	resp, err := http.Get(page.Source())
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
+	page.Status = resp.StatusCode
 
 	doc, err := html.Parse(resp.Body)
 	if err != nil {
@@ -25,9 +28,7 @@ func main() {
 		if n.Type == html.ElementNode && n.Data == "a" {
 			for _, attr := range n.Attr {
 				if attr.Key == "href" {
-					if _, ok := links[attr.Val]; !ok {
-						links[attr.Val] = struct{}{}
-					}
+					page.AddLink(attr.Val)
 				}
 			}
 		}
@@ -37,7 +38,7 @@ func main() {
 	}
 	f(doc)
 
-	for v := range links {
+	for _, v := range page.Links() {
 		fmt.Println(v)
 	}
 }
