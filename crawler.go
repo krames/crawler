@@ -1,44 +1,22 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
+	"os"
+	"os/signal"
 
 	"github.com/krames/crawler/domain"
-
-	"golang.org/x/net/html"
 )
 
 func main() {
-	page, _ := domain.NewPage("http://reddit.com/")
+	pool := NewWorkerPool(4)
+	output := make(chan domain.Page)
 
-	resp, err := http.Get(page.Source())
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	page.Status = resp.StatusCode
+	dispatcher := NewDispatcher(pool, output)
+	dispatcher.Start("http://bbq.kylerames.com")
 
-	doc, err := html.Parse(resp.Body)
-	if err != nil {
-		fmt.Println(err)
-	}
-	var f func(*html.Node)
-	f = func(n *html.Node) {
-		if n.Type == html.ElementNode && n.Data == "a" {
-			for _, attr := range n.Attr {
-				if attr.Key == "href" {
-					page.AddLink(attr.Val)
-				}
-			}
-		}
-		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			f(c)
-		}
-	}
-	f(doc)
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, os.Interrupt)
 
-	for _, v := range page.Links() {
-		fmt.Println(v)
-	}
+	<-sigChan
+	pool.Shutdown()
 }
