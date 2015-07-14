@@ -9,9 +9,10 @@ type Page struct {
 	source *url.URL
 	Status int
 	links  map[string]struct{}
+	Depth  int
 }
 
-func NewPage(source string) (*Page, error) {
+func NewPage(source string, depth int) (*Page, error) {
 	u, err := url.Parse(source)
 	if err != nil {
 		return nil, err
@@ -20,6 +21,7 @@ func NewPage(source string) (*Page, error) {
 	return &Page{
 		source: u,
 		links:  make(map[string]struct{}),
+		Depth:  depth,
 	}, nil
 }
 
@@ -45,8 +47,11 @@ func (p *Page) AddLink(link string) {
 	}
 
 	if u.Host == "" {
-		u.Scheme = p.source.Scheme
 		u.Host = p.source.Host
+	}
+
+	if u.Scheme == "" {
+		u.Scheme = p.source.Scheme
 	}
 
 	p.links[u.String()] = struct{}{}

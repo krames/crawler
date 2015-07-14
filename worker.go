@@ -47,10 +47,11 @@ func (p *WorkerPool) Shutdown() {
 type PageProcessor struct {
 	Source string
 	Output chan domain.Page
+	depth  int
 }
 
 func (pp PageProcessor) Process() {
-	page, _ := domain.NewPage(pp.Source)
+	page, _ := domain.NewPage(pp.Source, pp.depth)
 
 	resp, err := http.Get(page.Source())
 	if err != nil {

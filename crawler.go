@@ -8,10 +8,10 @@ import (
 )
 
 func main() {
-	pool := NewWorkerPool(4)
-	output := make(chan domain.Page)
+	pool := NewWorkerPool(10)
+	output := make(chan domain.Page, 1024)
 
-	dispatcher := NewDispatcher(pool, output)
+	dispatcher := NewDispatcher(pool, output, 2)
 	dispatcher.Start("http://bbq.kylerames.com")
 
 	sigChan := make(chan os.Signal, 1)
