@@ -23,7 +23,6 @@ func NewDispatcher(pool *WorkerPool, outputChan chan Page, depth int) Dispatcher
 
 	go func() {
 		for page := range d.output {
-			//			fmt.Println("Processing: " + page.Source())
 			d.printStats()
 
 			// delete incoming page from dispatched list
@@ -34,7 +33,6 @@ func NewDispatcher(pool *WorkerPool, outputChan chan Page, depth int) Dispatcher
 
 			// If we have crawled to the appropriate depth do not continue processing
 			if page.Depth < 1 {
-				//	fmt.Println("Done")
 				continue
 			}
 
