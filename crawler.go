@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"os/signal"
 )
@@ -16,5 +17,6 @@ func main() {
 	signal.Notify(sigChan, os.Interrupt)
 
 	<-sigChan
+	fmt.Println("Shutting down crawler")
 	pool.Shutdown()
 }
