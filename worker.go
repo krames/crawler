@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"sync"
 
-	"github.com/krames/crawler/domain"
 	"golang.org/x/net/html"
 )
 
@@ -46,12 +45,12 @@ func (p *WorkerPool) Shutdown() {
 
 type PageProcessor struct {
 	Source string
-	Output chan domain.Page
+	Output chan Page
 	depth  int
 }
 
 func (pp PageProcessor) Process() {
-	page, _ := domain.NewPage(pp.Source, pp.depth)
+	page, _ := NewPage(pp.Source, pp.depth)
 
 	resp, err := http.Get(page.Source())
 	if err != nil {

@@ -2,19 +2,17 @@ package main
 
 import (
 	"fmt"
-
-	"github.com/krames/crawler/domain"
 )
 
 type Dispatcher struct {
 	pool            *WorkerPool
-	output          chan domain.Page
+	output          chan Page
 	crawledPages    map[string]struct{}
 	dispatchedPages map[string]struct{}
 	depth           int
 }
 
-func NewDispatcher(pool *WorkerPool, outputChan chan domain.Page, depth int) Dispatcher {
+func NewDispatcher(pool *WorkerPool, outputChan chan Page, depth int) Dispatcher {
 	d := Dispatcher{
 		pool:            pool,
 		output:          outputChan,
